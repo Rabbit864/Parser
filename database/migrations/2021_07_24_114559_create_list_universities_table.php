@@ -19,7 +19,6 @@ class CreateListUniversitiesTable extends Migration
             $table->string('name');
             $table->string('city');
             $table->string('state');
-            $table->timestamps();
         });
     }
 
