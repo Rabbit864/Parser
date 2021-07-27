@@ -5,6 +5,8 @@ namespace App\Console\Commands;
 use App\Models\ListUniversity;
 use App\Modules\ParserUniversity;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class ParserCommand extends Command
 {
@@ -13,7 +15,7 @@ class ParserCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'parser:website';
+    protected $signature = 'parse:listUniversities';
 
     /**
      * The console command description.
@@ -39,15 +41,38 @@ class ParserCommand extends Command
      */
     public function handle()
     {
-        ListUniversity::truncate();
+        try {
 
-        $parser = new ParserUniversity();
+            DB::beginTransaction();
 
-        $this->info('Begin parse website');
+            ListUniversity::truncate();
 
-        $parser->parseListUniversities();
+            $parser = new ParserUniversity();
 
-        $this->info('Finish parse website');
+            $this->info('Begin parse website');
+
+            $urls = $parser->parsePaginationUrl();
+
+            foreach ($urls as $url) {
+
+                $this->info("Begin parse {$url}");
+
+                $universities = $parser->parseListUniversities($url);
+
+                $this->info("End parse {$url}");
+
+                ListUniversity::insert($universities);
+            }
+
+            $this->info('Finish parse website');
+
+            DB::commit();
+        } catch (\Exception $e) {
+
+            Log::error("Parse Error: {$e->getMessage()}");
+
+            DB::rollback();
+        }
 
         return 0;
     }
