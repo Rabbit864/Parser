@@ -51,7 +51,7 @@ class ParserCommand extends Command
 
             $this->info('Begin parse website');
 
-            $urls = $parser->parsePaginationUrl();
+            $urls = $parser->getPaginationUrl();
 
             foreach ($urls as $url) {
 

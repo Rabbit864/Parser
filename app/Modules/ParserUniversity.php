@@ -25,7 +25,7 @@ class ParserUniversity
     /**
      * @return string[]
      */
-    public function parsePaginationUrl()
+    public function getPaginationUrl()
     {
         $nextUrl = $this->baseUrl;
         $urlsListUniversity = [];
@@ -44,6 +44,8 @@ class ParserUniversity
 
         return $urlsListUniversity;
     }
+
+
 
     /**
      * @param string $url
