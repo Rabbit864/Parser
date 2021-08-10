@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\ListUniversity;
-use App\Modules\ParserUniversity;
+use App\Modules\ParserListUniversity;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -47,17 +47,15 @@ class ParserCommand extends Command
 
             ListUniversity::truncate();
 
-            $parser = new ParserUniversity();
+            $parser = new ParserListUniversity();
 
             $this->info('Begin parse website');
 
-            $urls = $parser->getPaginationUrl();
-
-            foreach ($urls as $url) {
+            foreach ($parser->getPaginationUrl() as $url) {
 
                 $this->info("Begin parse {$url}");
 
-                $universities = $parser->parseListUniversities($url);
+                $universities = $parser->parse($url);
 
                 $this->info("End parse {$url}");
 

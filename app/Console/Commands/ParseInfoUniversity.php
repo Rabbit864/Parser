@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Modules\ParserUniversity;
+use App\Modules\ParserInfoUniversity;
 use App\Models\InfoUniversity;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -47,23 +47,11 @@ class ParseInfoUniversity extends Command
 
             InfoUniversity::truncate();
 
-            $parser = new ParserUniversity();
+            $parser = new ParserInfoUniversity();
 
-            $urls = $parser->getPaginationUrl();
+            foreach ($parser->getUrlsPagesUniversities() as $url) {
 
-            $pageUrls = [];
-
-            foreach ($urls as $url) {
-                $this->info("Get pageUrls in {$url}");
-
-                foreach ($parser->getUrlsPagesUniversities($url) as $pageUrl) {
-                    $pageUrls[] = $pageUrl;
-                }
-            }
-
-            foreach ($pageUrls as $url) {
-
-                $university = $parser->parseInfoUniverity($url);
+                $university = $parser->parse($url);
 
                 $this->info("Save: {$university}");
 
@@ -71,7 +59,9 @@ class ParseInfoUniversity extends Command
             }
 
             DB::commit();
+
         } catch (\Exception $e) {
+
             $this->error("Parse Error: {$e->getMessage()}");
 
             Log::error("Parse Error: {$e->getMessage()}");
